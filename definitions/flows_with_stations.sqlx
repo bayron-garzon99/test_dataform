@@ -1,0 +1,8 @@
+config {
+  type: "table", 
+  
+}
+
+
+SELECT * from data-prd-388914.mongo_flows.events_flow  where country="CHL" and trackingid="1385186297"
+and TIMESTAMP_TRUNC(shipment_created_at, DAY) = TIMESTAMP("2024-05-10")
