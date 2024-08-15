@@ -1,5 +1,5 @@
 defaultProject: data-prd-388914
 defaultLocation: US
-defaultDataset: dbt_pickup_forecast
+defaultDataset: mongo_flows
 defaultAssertionDataset: dataform_assertions
 dataformCoreVersion: 3.0.0-beta.4
