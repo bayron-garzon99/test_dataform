@@ -2,7 +2,7 @@ config {
     type: "table",
          bigquery: { 
          partitionBy: "DATE(shipment_created_at)", 
-         clusterBy: ["trackingid", "country"], 
+         clusterBy: ["country", "trackingid"], 
          partitionExpirationDays: 100 
      }    
 }
