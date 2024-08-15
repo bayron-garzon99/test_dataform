@@ -1,8 +1,36 @@
 config {
-  type: "table", 
-  
+    type: "table",
+         bigquery: { 
+         partitionBy: "shipment_created_at", 
+         clusterBy: ["trackingid", "country"], 
+         partitionExpirationDays: 100 
+     }    
 }
 
-
-SELECT * from data-prd-388914.mongo_flows.events_flow  where country="CHL" and trackingid="1385186297"
-and TIMESTAMP_TRUNC(shipment_created_at, DAY) = TIMESTAMP("2024-05-10")
+SELECT
+  *
+FROM ( (
+    SELECT
+      * EXCEPT(shipment_created_at)
+    FROM
+      `data-prd-388914.mongo_flows.events_flow`
+    WHERE
+      EXTRACT(date
+      FROM
+        shipment_created_at) >= DATE_ADD(CURRENT_DATE(), INTERVAL -3 month))
+  INNER JOIN (
+    SELECT
+      shipments_trackingId AS trackingid,
+      shipments_createdAt AS shipment_created_at,
+      shipments_origin_station,
+      shipments_origin_zone,
+      shipments_destination_station,
+      shipments_destination_zone
+    FROM
+      `data-prd-388914.mongodb_v3.v3_gods_eye`
+    WHERE
+      EXTRACT(date
+      FROM
+        shipments_createdAt) >= DATE_ADD(CURRENT_DATE(), INTERVAL -3 month))
+  USING
+    ( trackingid ) )
