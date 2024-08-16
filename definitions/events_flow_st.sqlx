@@ -11,7 +11,7 @@ SELECT
   *
 FROM ( (
     SELECT
-      * EXCEPT(shipment_created_at)
+      * 
     FROM
       `data-prd-388914.mongo_flows_dataform.events_flow`
 )
