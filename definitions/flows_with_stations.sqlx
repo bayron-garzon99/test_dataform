@@ -2,7 +2,7 @@ config {
     type: "table",
          bigquery: { 
          partitionBy: "DATE(shipment_created_at)", 
-         clusterBy: ["country", "trackingid"], 
+         clusterBy: ["country", "tracking_id"], 
          partitionExpirationDays: 100 
      }    
 }
@@ -13,14 +13,11 @@ FROM ( (
     SELECT
       * EXCEPT(shipment_created_at)
     FROM
-      `data-prd-388914.mongo_flows.events_flow`
-    WHERE
-      EXTRACT(date
-      FROM
-        shipment_created_at) >= DATE_ADD(CURRENT_DATE(), INTERVAL -3 month))
+      `data-prd-388914.mongo_flows_dataform.events_flow`
+)
   INNER JOIN (
     SELECT
-      shipments_trackingId AS trackingid,
+      shipments_trackingId AS tracking_id,
       shipments_createdAt AS shipment_created_at,
       shipments_origin_station,
       shipments_origin_zone,
@@ -33,4 +30,4 @@ FROM ( (
       FROM
         shipments_createdAt) >= DATE_ADD(CURRENT_DATE(), INTERVAL -3 month))
   USING
-    ( trackingid ) )
+    ( tracking_id ) )
