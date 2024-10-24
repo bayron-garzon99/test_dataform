@@ -11,9 +11,10 @@ SELECT
   *
 FROM ( (
     SELECT
-      * 
+      * except(row_)
     FROM
-      `data-prd-388914.mongo_flows_dataform.events_flow`
+      (select *, ROW_NUMBER() over(partition by tracking_id order by extraction_time desc) as row_ from `data-prd-388914.mongo_flows_dataform.events_flow`)
+      where row_=1
 )
   INNER JOIN (
     SELECT
