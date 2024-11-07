@@ -1,0 +1,7 @@
+config {
+  type: "declaration",
+  schema: "mongo",
+  name: "test",
+  tags: ["source"],
+  description: "Raw mongo test table"
+}
