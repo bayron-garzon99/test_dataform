@@ -1,8 +1,8 @@
 config {
     type: "table",
-    schema: "dataset_name",
+    schema: "hub_dataset_name",
     database: "project_id",
-    name: "table_name",
+    name: "raw_table_name",
     description: "require('includes/example/docs.js').description",
     columns: "require('includes/example/docs.js').columns_test",
     bigquery: {
