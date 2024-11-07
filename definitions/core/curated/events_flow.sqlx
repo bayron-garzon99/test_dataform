@@ -4,7 +4,7 @@ config {
     database: "data-prd-388914",
     name: "curated_events_flow",
     description: require('includes/core/docs.js').description,
-    columns: require('includes/core/docs.js').columns_events_flow,    
+    columns: require('includes/core/docs.js').columns_events_flow,
     bigquery: {
         partitionBy: "DATE(shipment_created_at)",
         clusterBy: ["country", "tracking_id"],
@@ -13,7 +13,8 @@ config {
             department: "core",
             "name": "events_flow"
         }
-    }
+    },
+    tags: ["daily"]
 }
 
 SELECT
