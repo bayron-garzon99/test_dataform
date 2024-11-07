@@ -8,13 +8,13 @@
       "cron": "00 09 * * *",
       "notifications": [{
         "events": ["failure"],
-        "channels": ["email_jo"]
+        "channels": ["DE"]
       }]
     }],
     "notificationChannels": [{
-      "name": "email_jo",
+      "name": "DE",
       "email": {
-        "to": ["jo_bloggs@acme.co"]
+        "to": ["bayron.garzon@99minutos.com"]
       }
     }]
   }
