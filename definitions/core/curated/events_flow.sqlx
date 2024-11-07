@@ -1,10 +1,19 @@
 config {
     type: "table",
-         bigquery: { 
-         partitionBy: "DATE(shipment_created_at)", 
-         clusterBy: ["country", "tracking_id"], 
-         partitionExpirationDays: 100 
-     }    
+    schema: "core_events_flow",
+    database: "data-prd-388914",
+    name: "curated_events_flow",
+    description: "event's flow of state machine",
+    columns: core.docs.columns_events_flow,
+    bigquery: { 
+        partitionBy: "DATE(shipment_created_at)", 
+        clusterBy: ["country", "tracking_id"], 
+        partitionExpirationDays: 100,
+        labels: {
+          department: "core",
+          "name": "events_flow"
+        }
+    }    
 }
 
 SELECT
