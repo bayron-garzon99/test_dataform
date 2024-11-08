@@ -3,8 +3,8 @@ config {
     schema: "analytics_blacklist_curated",
     database: "data-prd-388914",
     name: "customer_userid_value",
-    description: require('includes/analytics/docs.js').description_blacklist_custom,
-    columns: require('includes/analytics/docs.js').columns_blacklist_custom,
+    description: require('includes/analytics/curated/docs.js').description_blacklist_custom,
+    columns: require('includes/analytics/curated/docs.js').columns_blacklist_custom,
     bigquery: {
         labels: {
             department: "analytics",            
