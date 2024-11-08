@@ -1,6 +1,6 @@
 config {
     type: "table",
-    schema: "dataset_name",
+    schema: "core_dataset_name_raw",
     database: "project_id",
     name: "table_name",
     description: "require('includes/example/docs.js').description",

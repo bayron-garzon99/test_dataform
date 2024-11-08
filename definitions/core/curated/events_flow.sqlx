@@ -1,8 +1,8 @@
 config {
     type: "table",
-    schema: "core_events_flow",
+    schema: "core_events_flow_curated",
     database: "data-prd-388914",
-    name: "curated_events_flow",
+    name: "events_flow",
     description: require('includes/core/docs.js').description,
     columns: require('includes/core/docs.js').columns_events_flow,
     bigquery: {

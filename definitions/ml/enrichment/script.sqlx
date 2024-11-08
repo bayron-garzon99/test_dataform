@@ -1,6 +1,6 @@
 config {
     type: "table",
-    schema: "dataset_name",
+    schema: "ml_dataset_name_enrichment",
     database: "project_id",
     name: "table_name",
     description: "require('includes/example/docs.js').description",
