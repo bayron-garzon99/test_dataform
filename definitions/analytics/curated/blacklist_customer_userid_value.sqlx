@@ -1,0 +1,25 @@
+config {
+    type: "table",
+    schema: "analytics_blacklist_curated",
+    database: "data-prd-388914",
+    name: "customer_userid_value",
+    description: require('includes/analytics/docs.js').description_blacklist_custom,
+    columns: require('includes/analytics/docs.js').columns_blacklist_custom,
+    bigquery: {
+        labels: {
+            department: "analytics",            
+            "name": "blacklist_customer_userid_value"
+        }
+    },
+    tags: ["once"]
+}
+
+
+SELECT
+  158851 AS customer_userid_value
+UNION ALL
+SELECT
+  144252 AS customer_userid_value
+UNION ALL
+SELECT
+  74910 AS customer_userid_value
