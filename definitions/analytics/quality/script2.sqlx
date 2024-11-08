@@ -1,7 +1,7 @@
 config {
     type: "table",
     database: "project_id",
-    schema: "de_dataset_name",    
+    schema: "analytics_dataset_name",    
     name: "quality_table_name",
     description: "require('includes/example/docs.js').description",
     columns: "require('includes/example/docs.js').columns_test",
