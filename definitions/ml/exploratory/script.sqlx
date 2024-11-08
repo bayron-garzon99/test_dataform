@@ -1,0 +1,27 @@
+config {
+    type: "table",
+    schema: "dataset_name",
+    database: "project_id",
+    name: "table_name",
+    description: "require('includes/example/docs.js').description",
+    columns: "require('includes/example/docs.js').columns_test",
+    bigquery: {
+        partitionBy: "DATE(created)",
+        clusterBy: ["country"],
+        partitionExpirationDays: 30,
+        labels: {
+            department: "example",
+            "name": "example"
+        }
+    },
+    tags: ["example"]
+}
+
+WITH RECURSIVE
+  example AS (
+    (SELECT 1 AS iteration,"MEX" as country, CURRENT_TIMESTAMP AS created UNION ALL SELECT 1 AS iteration, "MEX" as country, CURRENT_TIMESTAMP AS created)
+    UNION ALL
+    SELECT iteration + 1 AS iteration,"MEX" as country, CURRENT_TIMESTAMP AS created FROM example WHERE iteration < 3
+  )
+SELECT iteration,country, created FROM example
+ORDER BY 1 ASC

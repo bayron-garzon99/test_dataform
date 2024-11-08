@@ -1,0 +1,48 @@
+config {
+    type: "table",
+    schema: "de_events_flow",
+    database: "data-prd-388914",
+    name: "curated_events_flow",
+    description: require('includes/core/docs.js').description,
+    columns: require('includes/core/docs.js').columns_events_flow,
+    bigquery: {
+        partitionBy: "DATE(shipment_created_at)",
+        clusterBy: ["country", "tracking_id"],
+        partitionExpirationDays: 100,
+        labels: {
+            department: "core",
+            "name": "events_flow"
+        }
+    },
+    tags: ["daily"]
+}
+
+SELECT
+  *
+FROM ( (
+    SELECT
+      * EXCEPT(row_)
+    FROM (
+      SELECT
+        *,
+        ROW_NUMBER() OVER(PARTITION BY tracking_id ORDER BY extraction_time DESC) AS row_
+      FROM
+        `data-prd-388914.mongo_flows_dataform.events_flow`)
+    WHERE
+      row_=1 )
+  INNER JOIN (
+    SELECT
+      shipments_trackingId AS tracking_id,
+      shipments_createdAt AS shipment_created_at,
+      shipments_origin_station,
+      shipments_origin_zone,
+      shipments_destination_station,
+      shipments_destination_zone
+    FROM
+      `data-prd-388914.mongodb_v3.v3_gods_eye`
+    WHERE
+      EXTRACT(date
+      FROM
+        shipments_createdAt) >= DATE_ADD(CURRENT_DATE(), INTERVAL -3 month))
+  USING
+    ( tracking_id ) )
