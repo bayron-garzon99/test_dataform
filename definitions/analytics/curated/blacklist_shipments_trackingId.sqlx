@@ -1,0 +1,23 @@
+config {
+    type: "table",
+    database: "data-prd-388914",
+    schema: "analytics_blacklist_curated",    
+    name: "blacklist_shipments_trackingId",
+    description: require('includes/analytics/curated/docs.js').description_blacklist_shipments_trackingId,
+    columns: require('includes/analytics/curated/docs.js').columns_blacklist_shipments_trackingId,
+    bigquery: {
+        labels: {
+            department: "analytics",            
+            "name": "blacklist_shipments_trackingId"
+        }
+    },
+    tags: ["once"]
+}
+
+
+CREATE OR REPLACE EXTERNAL TABLE analytics_blacklist_curated.blacklist_shipments_trackingId (
+  shipments_trackingId STRING,
+) OPTIONS (
+    format = 'PARQUET',
+    uris = ['gs://analytical_engineering/analytics_blacklist_curated/blacklist_shipments_trackingId.parquet'],
+    skip_leading_rows = 0);
