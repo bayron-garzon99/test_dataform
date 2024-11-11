@@ -16,10 +16,10 @@ config {
 
 
 SELECT
-  158851 AS customer_userid_value
+  "158851" AS customer_userid_value
 UNION ALL
 SELECT
-  144252 AS customer_userid_value
+  "144252" AS customer_userid_value
 UNION ALL
 SELECT
-  74910 AS customer_userid_value
+  "74910" AS customer_userid_value
