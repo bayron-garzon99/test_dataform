@@ -1,0 +1,37 @@
+config {
+    type: "table",
+    schema: "analytics_big_picture_enrichment",
+    database: "data-prd-388914",
+    name: "shipments_xl_etas_customer_cod_external_black_lists",
+    bigquery: {
+        partitionBy: "DATE(shipments_createdAt)",
+        clusterBy: ["shipments_origin_country", "shipments_trackingId"],
+        partitionExpirationDays: 100,
+        labels: {
+            department: "analytics",
+            "name": "shipments_xl_etas_customer_cod_external_black_lists"
+        }
+    },
+    tags: ["big_picture"]
+}
+
+SELECT
+  *
+FROM
+  ${ref("analytics_curated", "shipments_xl_etas_customer_cod_external")}
+  --`data-prd-388914.fast_and_furious.gods_eye_v3`
+WHERE
+  shipments_trackingId NOT IN (
+  SELECT
+    DISTINCT shipments_trackingId
+  FROM
+    ${ref("blacklist_shipments_trackingId")}
+    --`data-prd-388914.mongo_blacklist.blacklist_shipments_trackingId`
+    )
+    AND customer_userid_value NOT IN (
+    SELECT
+      DISTINCT customer_userid_value
+    FROM
+      ${ref("customer_userid_value")}
+      --`data-prd-388914.mongo_blacklist.blacklist_customer_userid_value`
+      )
