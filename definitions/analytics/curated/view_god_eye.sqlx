@@ -1,0 +1,576 @@
+config {
+    type: "view",
+    database: "data-prd-388914",
+    schema: "analytics_curated",    
+    name: "gods_eye",
+    -- description: require('includes/analytics/curated/docs.js').description_gods_eye,
+    -- columns: require('includes/analytics/curated/docs.js').columns_gods_eye,
+    bigquery: {
+        labels: {
+            department: "analytics",            
+            "name": "gods_eye"
+        }
+    },
+    tags: ["once"]
+}
+
+
+
+SELECT
+  -- TRACKING
+  -- SHIPMENTS
+    -- ID
+    --shipments.shipments_id shipments_shipments_id,
+
+    -- COUNTER
+    shipments.trackingId shipments_trackingId, -- counter
+    shipments.option_metadata_LegacyTrackingId shipments_option_metadata_LegacyTrackingId, -- trackingid
+    shipments.internalKey shipments_internalKey, -- receivedorderid
+    shipments.master_children shipments_master_children,
+
+    -- VERSION AND PLATFORM
+    shipments.metadata_source shipments_metadata_source,
+
+    -- DATES
+    -- CREATED
+    --shipments.createdAt_utc shipments_createdAt_utc,
+    shipments.createdAt shipments_createdAt,
+
+    -- DELIVERY TYPE AND PACKAGESIZE
+    case
+      when shipments.origin_country in ('MEX') and customer.userid_value in ('179762', '362') then 'Tailor Made MEX'
+      else shipments.deliveryType
+    end shipments_deliveryType,
+    --shipments.deliveryType shipments_deliveryType,
+    --case
+      --when shipments.deliveryType in ('NXT') then 'SPT'
+      --else shipments.deliveryType
+    --end shipments_deliveryType_invoicing,
+    case
+      when shipments.origin_country in ('CHL') and xl.upgraded = FALSE and (shipments.packageSize is null or shipments.packageSize in ('')) THEN shipments.items_size
+      when shipments.origin_country in ('CHL') and xl.upgraded = FALSE THEN shipments.packageSize
+      when xl.legacy_packagesize <> xl.lts_packagesize then xl.lts_packagesize
+      when shipments.packageSize is null or shipments.packageSize in ('') then shipments.items_size
+      else shipments.packageSize
+    end shipments_packageSize,
+
+    -- ITEM
+    --shipments.items_size shipments_items_size,
+    shipments.items_weight shipments_items_weight,
+    shipments.items_description shipments_items_description, -- Jorge, KAM
+
+    -- PICKUP DETAILS
+    --shipments.option_ecoTag shipments_option_ecoTag,
+    shipments.option_pickUpAfter shipments_option_pickUpAfter,
+
+    -- STATUS STATEMACHINE
+
+    -- ATTEMPTS
+    shipments.data_unsuccessfulPickupAttempts shipments_data_unsuccessfulPickupAttempts,
+    shipments.data_pickupAttempts shipments_data_pickupAttempts,
+    shipments.data_unsuccessfulDeliveryAttempts shipments_data_unsuccessfulDeliveryAttempts,
+    shipments.data_deliveryAttempts shipments_data_deliveryAttempts,
+    shipments.data_returnAttempts shipments_data_returnAttempts,
+    --shipments.data_unsuccessfulReturnAttempts shipments_data_unsuccessfulReturnAttempts,
+
+    -- COMPANY
+
+    -- FULFILLMENT
+
+    -- COD
+    shipments.payment_cashOnDelivery_amount shipments_payment_cashOnDelivery_amount,
+    shipments.payment_cashOnDelivery_driverHasPay shipments_payment_cashOnDelivery_driverHasPay,
+
+    -- C2C
+    shipments.c2c_category shipments_c2c_category,
+    shipments.metadata_coverageStrategy shipments_metadata_coverageStrategy,
+
+    -- ORIGIN
+    shipments.origin_country shipments_origin_country,
+    shipments.origin_geoType shipments_origin_geoType,
+    --shipments.origin_lat shipments_origin_lat,
+    --shipments.origin_lng shipments_origin_lng,
+    concat(shipments.origin_lat, ',', shipments.origin_lng) shipments_origin_lat_lng,
+    --concat('http://maps.google.com/maps?z=12&t=m&q=loc:', shipments.origin_lat, ',', shipments.origin_lng) shipments_origin_lat_lng_url,
+    --shipments.origin_locationId,
+    CASE
+      WHEN shipments.origin_station like 'IX%' THEN 'IX'
+      WHEN shipments.origin_station like 'IV%' THEN 'IV'
+      WHEN shipments.origin_station like 'RM%' THEN 'RM'
+      WHEN shipments.origin_station like 'XVI%' THEN 'XVI'
+      WHEN shipments.origin_station like'XV%'  THEN 'XV'
+      WHEN shipments.origin_station like'XIV%' THEN 'XIV'
+      WHEN shipments.origin_station like'XIII%' THEN 'XIII'
+      WHEN shipments.origin_station like'XII%' THEN 'XII'
+      WHEN shipments.origin_station like'XI%' THEN 'XI'
+      WHEN shipments.origin_station like'X%' THEN 'X'
+      WHEN shipments.origin_station like 'VIII%' THEN 'VIII'
+      WHEN shipments.origin_station like 'VII%' THEN 'VII'
+      WHEN shipments.origin_station like 'VI%' THEN 'VI'
+      WHEN shipments.origin_station like 'V%' THEN 'V'
+      WHEN shipments.origin_station like 'III%' THEN 'III'
+      WHEN shipments.origin_station like 'II%' THEN 'II'
+      WHEN shipments.origin_station like 'I%' THEN 'I'
+      ELSE shipments.origin_station
+    END shipments_origin_station_chl,
+    shipments.origin_station shipments_origin_station,
+    --shipments.origin_type shipments_origin_type,
+    shipments.origin_zipcode shipments_origin_zipcode,
+    shipments.origin_zone shipments_origin_zone,
+    shipments.origin_references shipments_origin_references,
+
+    -- DESTINATION
+    shipments.destination_geoType shipments_destination_geoType,
+    --shipments.destination_lat shipments_destination_lat,
+    --shipments.destination_lng shipments_destination_lng,
+    concat(shipments.destination_lat, ',', shipments.destination_lng) shipments_destination_lat_lng,
+    --concat('http://maps.google.com/maps?z=12&t=m&q=loc:', shipments.destination_lat, ',', shipments.destination_lng) shipments_destination_lat_lng_url,
+    --shipments.destination_locationId,
+    CASE
+      WHEN shipments.destination_station like 'IX%' THEN 'IX'
+      WHEN shipments.destination_station like 'IV%' THEN 'IV'
+      WHEN shipments.destination_station like 'RM%' THEN 'RM'
+      WHEN shipments.destination_station like 'XVI%' THEN 'XVI'
+      WHEN shipments.destination_station like'XV%'  THEN 'XV'
+      WHEN shipments.destination_station like'XIV%' THEN 'XIV'
+      WHEN shipments.destination_station like'XIII%' THEN 'XIII'
+      WHEN shipments.destination_station like'XII%' THEN 'XII'
+      WHEN shipments.destination_station like'XI%' THEN 'XI'
+      WHEN shipments.destination_station like'X%' THEN 'X'
+      WHEN shipments.destination_station like 'VIII%' THEN 'VIII'
+      WHEN shipments.destination_station like 'VII%' THEN 'VII'
+      WHEN shipments.destination_station like 'VI%' THEN 'VI'
+      WHEN shipments.destination_station like 'V%' THEN 'V'
+      WHEN shipments.destination_station like 'III%' THEN 'III'
+      WHEN shipments.destination_station like 'II%' THEN 'II'
+      WHEN shipments.destination_station like 'I%' THEN 'I'
+      ELSE shipments.destination_station
+    END shipments_destination_station_chl,
+    shipments.destination_station shipments_destination_station,
+    --shipments.destination_type shipments_destination_type,
+    shipments.destination_zipcode shipments_destination_zipcode,
+    shipments.destination_zone shipments_destination_zone,
+
+    -- PRICES
+    shipments.prices_cost shipments_prices_cost,
+    --shipments.prices_costExtraCityToCity shipments_prices_costExtraCityToCity,
+    shipments.prices_costExtraInsurance shipments_prices_costExtraInsurance,
+    --shipments.prices_costIva shipments_prices_costIva,
+    --shipments.prices_costWithExtras shipments_prices_costWithExtras,
+    --shipments.prices_costWithExtrasAndIVA shipments_prices_costWithExtrasAndIVA,
+
+    -- BILLEDEVENTS
+    --shipments.billedEvents_code,
+    --shipments.billedEvents_transactionAt_utc,
+
+    -- SENDER
+    CONCAT(COALESCE(shipments.sender_firstName, NULL), ' ', COALESCE(shipments.sender_lastName, NULL)) shipments_sender_firstName,
+    --shipments.sender_firstName shipments_sender_firstName,
+    --shipments.sender_lastName shipments_sender_lastName,
+    --concat(shipments.sender_firstName, ' ', shipments.sender_lastName) shipments_sender_firstName_lastName,
+    --shipments.sender_email shipments_sender_email,
+    --shipments.sender_phone shipments_sender_phone,
+
+    -- RECIPIENT
+    --shipments.recipient_firstName shipments_recipient_firstName,
+    --shipments.recipient_lastName shipments_recipient_lastName,
+    --concat(shipments.recipient_firstName, ' ', shipments.recipient_lastName) shipments_recipient_firstName_lastName,
+    --shipments.recipient_email shipments_recipient_email,
+    --shipments.recipient_phone shipments_recipient_phone,
+
+    -- NOTES
+    --shipments.option_notes,
+
+  -- EVENTS (latest shipment information)
+
+  -- ETAS (shipment_etas)
+    --shipment_etas.shipment_etas_id,
+    --shipment_etas.tracking_id,
+    --shipment_etas.country,
+    --shipment_etas.trigger_event shipment_etas_trigger_event,
+    --shipment_etas.pickup_at_utc shipment_etas_pickup_at_utc,
+    --shipment_etas.pickup_at_timestamp shipment_etas_pickup_at_timestamp,
+    --shipment_etas.added_days shipment_etas_added_days,
+    --shipment_etas.eta_utc shipment_etas_eta_utc,
+    --shipment_etas.eta_timestamp shipment_etas_eta_timestamp,
+    
+    --DATETIME(DATE(etas_v3.shipment_etas_eta_timestamp)) shipment_etas_eta_timestamp,
+      CASE 
+      WHEN shipments.origin_country IN ('CHL') and DATE(shipments.createdAt) < '2024-10-30' THEN DATETIME(DATE(etas_v3.shipment_etas_eta_timestamp))
+      WHEN shipments.origin_country IN ('CHL') and DATE(shipments.createdAt) >= '2024-10-30' THEN DATETIME(DATE(client_type))
+      ELSE DATETIME(DATE(etas_v3.shipment_etas_eta_timestamp))
+      END shipment_etas_eta_timestamp,
+    /*CASE 
+      WHEN shipments.origin_country IN ('CHL') THEN DATETIME(DATE(client_type))
+      ELSE DATETIME(DATE(etas_v3.shipment_etas_eta_timestamp))
+    END shipment_etas_eta_timestamp,*/
+
+    --shipment_etas.origin_zone,
+    --shipment_etas.origin_station,
+    --shipment_etas.destination_zone,
+    --shipment_etas.destination_station,
+    --shipment_etas.client_id,
+    --shipment_etas.rule_type shipment_etas_rule_type,
+    --shipment_etas.created_at,
+    --shipment_etas.updated_at,
+
+    -- RETURN (CLIENT)
+      --etas_client.added_days etas_client_added_days, 
+      --etas_client.eta_timestamp etas_client_eta_timestamp, 
+      DATETIME(DATE(etas_v3.etas_client_eta_timestamp)) etas_client_eta_timestamp,
+      --etas_client.rule_type,
+  
+  -- ETAS (shipment_etas_v2)
+    -- PICKUP_TYPE
+    DATETIME(DATE(shipment_etas_v2.pickup_type)) shipment_etas_v2_pickup_type,
+    shipment_etas_v2.evaluation_pickup_type shipment_etas_v2_evaluation_pickup_type,
+    -- INBOUND_TYPE
+    DATETIME(DATE(shipment_etas_v2.inbound_type)) shipment_etas_v2_inbound_type,
+    shipment_etas_v2.evaluation_inbound_type shipment_etas_v2_evaluation_inbound_type,
+    -- CLIENT_TYPE
+    DATETIME(DATE(shipment_etas_v2.client_type)) shipment_etas_v2_client_type,
+    shipment_etas_v2.evaluation_client_type shipment_etas_v2_evaluation_client_type,
+    -- DISTRIBUTION_TYPE
+    DATETIME(DATE(shipment_etas_v2.distribution_type)) shipment_etas_v2_distribution_type,
+    shipment_etas_v2.evaluation_distribution_type shipment_etas_v2_evaluation_distribution_type,
+    -- SUPPLY_TYPE
+    DATETIME(DATE(shipment_etas_v2.supply_type)) shipment_etas_v2_supply_type,
+    shipment_etas_v2.evaluation_supply_type shipment_etas_v2_evaluation_supply_type,
+
+  -- CUSTOMER AND BILLING
+    -- PROFILES AND CUSTOMER_CONFIG
+    --customer.profiles_id,
+    customer.auth_hydraclientid customer_auth_hydraclientid,
+    --customer.auth_role customer_auth_role,
+    --customer.auth_parentid customer_auth_parentid,
+    customer.userid_value customer_userid_value,
+    customer.details_createdat customer_details_createdat,
+    --customer.details_updatedat,
+    --customer.country_value,
+    customer.details_company_name customer_details_company_name,
+    --customer.details_company_legalname customer_details_company_legalname,
+    --customer.details_company_companytype customer_details_company_companytype,
+    --customer.details_company_producttype customer_details_company_producttype,
+    --customer.details_company_cfdi customer_details_company_cfdi,
+    --customer.details_company_rfc customer_details_company_rfc,
+    customer.details_contact_email customer_details_contact_email,
+    --customer.details_contact_phone customer_details_contact_phone,
+    --customer.details_payment_type,
+    customer.details_payment_typestring customer_details_payment_typestring,
+    --customer.details_experience customer_details_experience,
+    --customer.details_fulfill99,
+    --customer.details_cod,
+    --customer.details_point99,
+    --customer.details_route99,
+    --customer.details_taylormade,
+    --customer.details_parcel_nextday,
+    --customer.details_parcel_sameday,
+    --customer.details_parcel_national,
+    --customer.details_parcel_co2free,
+    --customer.details_parcel_return,
+    --customer.details_parcel_c2c,
+    --customer.details_parcel_p2p,
+    --customer.details_flatrate,
+    --customer.expressrates,
+    --customer.extras_insurancecost customer_extras_insurancecost,
+    --customer.extras_iva customer_extras_iva,
+    --customer.extras_citytocity customer_extras_citytocity,
+    --customer.extras_cashondelivery customer_extras_cashondelivery,
+    --customer.invoice_billableevents_recollection customer_invoice_billableevents_recollection,
+    --customer.invoice_billableevents_deliveries customer_invoice_billableevents_deliveries,
+    --customer.invoice_billableevents_updatedat,
+    --customer.invoice_netsuiteid customer_invoice_netsuiteid,
+
+  -- XL
+    --xl.user,
+    --xl.counter,
+    xl.created_at xl_created_at,
+    --xl.updated_at xl_updated_at,
+    --xl.station xl_station,
+    xl.dimensions_weight xl_dimensions_weight,
+    xl.dimensions_length xl_dimensions_length,
+    xl.dimensions_width xl_dimensions_width,
+    xl.dimensions_height xl_dimensions_height,
+    xl.dimensions_volumetric_weight xl_dimensions_volumetric_weight,
+    --xl.upgraded xl_upgraded,
+    --xl.upgraded_at,
+    --xl.upgraded_financial xl_upgraded_financial,
+    --xl.upgraded_financial_at xl_upgraded_financial_at,
+    xl.legacy_packagesize xl_legacy_packagesize, -- Tamaño inicial
+    xl.lts_packagesize xl_lts_packagesize, -- Tamaño actualizado
+    xl.resize xl_resize, 
+    xl.lts_price xl_lts_price,
+    --xl.lts_grossprice xl_lts_grossprice,
+    --xl.lts_finalgrossprice xl_lts_finalgrossprice,
+    --xl.lts_finalprice xl_lts_finalprice,
+
+  -- BUSINESS
+    -- COD
+    --cod.orders_cod_orders_id,
+    --cod.orders_source,
+    --cod.orders_counter,
+    cod.orders_status cod_orders_status,
+    --cod.orders_orderStatus cod_orders_orderStatus,
+    date_sub(cod.orders_deliveredAt, INTERVAL 6 hour) cod_orders_deliveredAt,
+    --cod.orders_deliveredAt cod_orders_deliveredAt,
+    --cod.orders_isCOD cod_orders_isCOD,
+    --cod.orders_amount cod_orders_amount,
+    --cod.orders_paymentMethod,
+    --cod.orders_createdAt,
+    --cod.orders_updatedAt,
+    --cod.referencedpayments_id,
+
+    --cod.sentToCarrier cod_sentToCarrier,
+    --cod.carrier cod_carrier,
+
+    cod.paymentMethod cod_paymentMethod,
+    cod.referenceCode cod_referenceCode,
+
+    cod.pago46PaymentId cod_pago46PaymentId,
+    cod.paidAt cod_paidAt,
+
+    --cod.createdAt,
+    --cod.updatedAt,
+
+    cod.pendingAmount cod_pendingAmount,
+    cod.amountPaid cod_amountPaid,
+    cod.amount cod_amount,
+
+    --cod.driverToken,
+    --cod.driverStation cod_driverStation,
+    cod.orders_driverid cod_orders_driverid,
+    cod.driverNickname cod_driverNickname,
+    cod.driverName cod_driverName,
+    cod.driverProvider cod_driverProvider,
+    --cod.driverPhone cod_driverPhone,
+    --cod.driverEmail cod_driverEmail,
+    --cod.orders_id,
+
+    -- FULFILLMENT
+    --f.fulfill_orders_id,
+    --f.userId,
+    --f.userShipHeroId,
+    --f.SecurePackage,
+    --f.amountCash,
+    --f.amountSecure,
+    --f.cahsOnDelivery,
+    --f.price_subTotal,
+    --f.price_totalDiscounts,
+    --f.price_totalPrice,
+    --f.price_totalTax,
+    --f.createdAt,
+    --f.updatedAt,
+    --f.trackingNumber,
+    --f.deliveryType,
+    --f.packageSize,
+    --f.fulfillmentStatus f_fulfillmentStatus,
+    --f.shipheroId f_shipheroId,
+    f.shipheroOrderNumber f_shipheroOrderNumber,
+    --f.externalTracking_trackingId f_externalTracking_trackingId,
+    --f.externalTracking_carrier f_externalTracking_carrier,
+
+    -- EXTERNAL CARRIERS
+    --external_orders.external_orders_id,
+    external_orders.externalCarrierId external_orders_externalCarrierId,
+    --external_orders.internalTracking external_orders_internalTracking,
+    external_orders.externalTracking external_orders_externalTracking,
+    --external_orders.createdAt,
+    --external_orders.updatedAt,
+
+    -- DELIVERY CELL
+    --dc.orders_counter,
+    ---dc.containers_id dc_containers_id,
+    ---dc.containers_tag dc_containers_tag,
+    ---dc.containers_status_id dc_containers_status_id,
+    ---dc.container_statuses_containers_name dc_container_statuses_containers_name,
+    ---dc.points_id dc_points_id,
+    ---dc.points_name dc_points_name,
+    ---dc.veloces_driver_id dc_veloces_driver_id,
+    ---dc.veloces_name dc_veloces_name,
+    ---dc.containers_created_at dc_containers_created_at,
+    ---dc.containers_updated_at dc_containers_updated_at,
+
+    -- PUNTO99
+    ---p99.internal_reference p99_internal_reference,
+    --p99.external_reference,
+    ---p99.dispatch_place_id p99_dispatch_place_id,
+    ---p99.client_id p99_client_id,
+    ---p99.business_name p99_business_name,
+    ---p99.service_type p99_service_type,
+    ---p99.dispatch_service p99_dispatch_service,
+    ---p99.order_type p99_order_type,
+    ---p99.action p99_action,
+    ---p99.order_cicle p99_order_cicle,
+    ---p99.ol_created_at p99_ol_created_at,
+    ---p99.ol_updated_at p99_ol_updated_at
+
+-- TRACKING
+  -- SHIPMENTS
+  --FROM `data-prd-388914.data_mongo_views_prd.mongo_statemachine_shipments_json_id` shipments
+  FROM `data-prd-388914.data_mongo_enrinchment_views_prd.mongo_statemachine_shipments_json_id` shipments
+
+  -- ETAS (shipment_etas)
+    -- ETAS V1
+    --LEFT JOIN `data-prd-388914.mongodb_v3.v3_etasprod_shipment_etas` shipment_etas on shipments.trackingId = shipment_etas.tracking_id
+    --LEFT JOIN `data-prd-388914.data_mongo_views_prd.mongo_etasprod_shipment_etas_json_id` shipment_etas on shipments.trackingId = shipment_etas.tracking_id
+
+    -- ETAS V2
+    --LEFT JOIN (
+      --SELECT
+      --  *
+      --FROM
+      --  `data-prd-388914.data_mongo_views_prd.mongo_etasprod_shipment_etas_json_id_RET`
+      --WHERE rule_type NOT IN ('CLIENT')
+    --) shipment_etas on shipments.trackingId = shipment_etas.tracking_id
+    --LEFT JOIN (
+      --SELECT
+      --  *
+      --FROM
+      --  `data-prd-388914.data_mongo_views_prd.mongo_etasprod_shipment_etas_json_id_RET`
+      --WHERE rule_type IN ('CLIENT')
+    --) etas_client on shipments.trackingId = etas_client.tracking_id
+
+    -- ETAS V3
+    LEFT JOIN (
+      SELECT
+        --COUNT(tracking_id), COUNT(DISTINCT tracking_id), COUNT(tracking_id) - COUNT(DISTINCT tracking_id)
+        tracking_id,
+        shipment_etas_eta_timestamp,
+        etas_client_eta_timestamp
+      FROM (
+        SELECT
+          tracking_id,
+          MAX(CASE WHEN rule_type NOT IN ('CLIENT') THEN eta_timestamp END) OVER (PARTITION BY tracking_id) shipment_etas_eta_timestamp,
+          MAX(CASE WHEN rule_type IN ('CLIENT') THEN eta_timestamp END) OVER (PARTITION BY tracking_id) etas_client_eta_timestamp,
+          ROW_NUMBER() OVER (PARTITION BY tracking_id ORDER BY updated_at desc ) order_updated_at
+        FROM
+          --`data-prd-388914.data_mongo_views_prd.mongo_etasprod_shipment_etas_json_id_RET`
+          `data-prd-388914.data_mongo_enrinchment_views_prd.mongo_etasprod_shipment_etas_json_id`
+        )
+      WHERE
+        order_updated_at = 1
+    ) etas_v3 ON shipments.trackingId = etas_v3.tracking_id 
+  
+  -- ETAS (shipment_etas_v2)
+  LEFT JOIN (
+    SELECT 
+      tracking_id,
+      pickup_type_eta pickup_type,
+      pickup_type_evaluation_successfully evaluation_pickup_type,
+      inbound_type_eta inbound_type,
+      inbound_type_evaluation_successfully evaluation_inbound_type,
+      client_type_eta client_type,
+      client_type_evaluation_successfully evaluation_client_type,
+      distribution_type_eta distribution_type,
+      distribution_type_evaluation_successfully evaluation_distribution_type,
+      supply_type_eta supply_type,
+      supply_type_evaluation_successfully evaluation_supply_type
+    FROM `data-prd-388914.mongo_testing.gods_eye_v1_analytics_etas_v2`
+    ) shipment_etas_v2 ON shipments.trackingId = shipment_etas_v2.tracking_id 
+
+  --LEFT JOIN 
+  --(
+    --SELECT
+    --COUNT(tracking_id), COUNT(DISTINCT tracking_id)
+    --tracking_id,
+    -- PICKUP_TYPE
+    --pickup_type,
+    --evaluation_pickup_type,
+    -- INBOUND_TYPE
+    --inbound_type,
+    --evaluation_inbound_type,
+    -- CLIENT_TYPE
+    --client_type,
+    --evaluation_client_type,
+    -- DISTRIBUTION_TYPE
+    --distribution_type,
+    --evaluation_distribution_type,
+    -- SUPPLY_TYPE
+    --supply_type,
+    --evaluation_supply_type
+
+  --FROM (
+    --SELECT
+      --tracking_id,
+      -- PICKUP_TYPE
+      --MAX(CASE WHEN eta_type IN ('PICKUP_TYPE') THEN eta END) OVER (PARTITION BY tracking_id) pickup_type,
+      --CASE WHEN MAX(CASE WHEN eta_type IN ('PICKUP_TYPE') THEN evaluation_successfully END) OVER (PARTITION BY tracking_id) = TRUE THEN 1 ELSE 0 END evaluation_pickup_type,
+      -- INBOUND_TYPE
+      --MAX(CASE WHEN eta_type IN ('INBOUND_TYPE') THEN eta END) OVER (PARTITION BY tracking_id) inbound_type,
+      --CASE WHEN MAX(CASE WHEN eta_type IN ('INBOUND_TYPE') THEN evaluation_successfully END) OVER (PARTITION BY tracking_id) = TRUE THEN 1 ELSE 0 END evaluation_inbound_type,
+      -- CLIENT_TYPE
+      --MAX(CASE WHEN eta_type IN ('CLIENT_TYPE') THEN eta END) OVER (PARTITION BY tracking_id) client_type,
+      --CASE WHEN MAX(CASE WHEN eta_type IN ('CLIENT_TYPE') THEN evaluation_successfully END) OVER (PARTITION BY tracking_id) = TRUE THEN 1 ELSE 0 END evaluation_client_type,
+      -- DISTRIBUTION_TYPE
+      --MAX(CASE WHEN eta_type IN ('DISTRIBUTION_TYPE') THEN eta END) OVER (PARTITION BY tracking_id) distribution_type,
+      --CASE WHEN MAX(CASE WHEN eta_type IN ('DISTRIBUTION_TYPE') THEN evaluation_successfully END) OVER (PARTITION BY tracking_id) = TRUE THEN 1 ELSE 0 END evaluation_distribution_type,
+      -- SUPPLY_TYPE
+      --MAX(CASE WHEN eta_type IN ('SUPPLY_TYPE') THEN eta END) OVER (PARTITION BY tracking_id) supply_type,
+      --CASE WHEN MAX(CASE WHEN eta_type IN ('SUPPLY_TYPE') THEN evaluation_successfully END) OVER (PARTITION BY tracking_id) = TRUE THEN 1 ELSE 0 END evaluation_supply_type,
+      --ROW_NUMBER() OVER (PARTITION BY tracking_id ORDER BY updated_at desc ) order_updated_at
+    --FROM
+      --`data-prd-388914.data_mongo_views_prd.mongo_etasprod_shipment_etas_v2_json_id`
+  --)
+  --WHERE
+    --order_updated_at = 1
+    --AND inbound_type IS NOT NULL AND distribution_type IS NOT NULL AND supply_type IS NOT NULL
+    --tracking_id IN ('2998637489', '1953922374')
+  --) shipment_etas_v2 ON shipments.trackingId = shipment_etas_v2.tracking_id 
+
+  -- CUSTOMER AND BILLING
+  -- PROFILES
+  LEFT JOIN `data-prd-388914.mongodb_v3.v3_customerprofilesprod_profiles` customer on shipments.account_client_id = customer.auth_hydraclientid
+
+  -- XL
+  --LEFT JOIN `data-prd-388914.mongodb_v3.v3_xl_events` xl on shipments.trackingId = xl.counter
+
+  LEFT JOIN (
+
+    SELECT
+      *
+    FROM (
+      SELECT
+        counter,
+        created_at,
+        dimensions_weight,
+        dimensions_length,
+        dimensions_width,
+        dimensions_height,
+        dimensions_volumetric_weight,
+        upgraded,
+        legacy_packagesize,
+        lts_packagesize,
+        resize,
+        lts_price,
+        ROW_NUMBER() OVER (PARTITION BY counter ORDER BY upgraded_at DESC) AS order_updated_at
+      FROM
+        `data-prd-388914.mongodb_v3.v3_xl_events` )
+    WHERE
+      order_updated_at = 1
+
+  ) xl ON shipments.trackingId = xl.counter
+
+  -- BUSINESS
+  -- COD
+  LEFT JOIN `data-prd-388914.mongodb_v3.v3_DbCODService_orders_referencedpayments` cod on shipments.trackingId = cod.orders_counter
+
+  -- FULFILLMENT
+  LEFT JOIN `data-prd-388914.mongodb_v3.v3_fulfill99production_orders` f on shipments.trackingId = f.trackingNumber
+
+  -- EXTERNAL CARRIERS
+  LEFT JOIN `data-prd-388914.mongodb_v3.v3_intrexternalcarriersprod_external_orders` external_orders on shipments.trackingId = external_orders.internalTracking
+
+  -- DELIVERY CELL
+  --LEFT JOIN `data-prd-388914.dependencies_v3.v3_delivery_cell_view` dc on shipments.trackingId = cast(dc.orders_counter as string)
+
+  -- PUNTO99
+  --LEFT JOIN `data-prd-388914.dependencies_v3.v3_punto99_view` p99 on shipments.trackingId = p99.external_reference
+
+WHERE
+  --shipments.order_updatedat = 1 AND 
+  --DATE(shipments.createdAt) >= '2023-01-01'
+  --DATE(shipments.createdAt) >= '2023-10-01'
+  ( (EXTRACT(year FROM shipments.createdAt)) = EXTRACT(year FROM CURRENT_DATE('America/Mexico_City')) 
+  OR (EXTRACT(year FROM shipments.updatedAt)) = EXTRACT(year FROM CURRENT_DATE('America/Mexico_City'))
+  )
+--AND shipments.trackingId IN ('4163240503') 
